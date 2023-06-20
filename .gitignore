@@ -1,0 +1,5 @@
+.env
+veoliatest-390210-ed110a3b2ee1.json
+outputs/*
+__pycache__
+.DS_Store

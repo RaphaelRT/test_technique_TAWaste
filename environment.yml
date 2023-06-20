@@ -1,0 +1,16 @@
+name: veolia-env
+channels:
+  - defaults
+dependencies:
+  - python=3.9.16
+  - pandas
+  - openpyxl
+  - pip:
+    - selenium==3.141.0
+    - python-dotenv
+    - webdriver_manager
+    - gspread
+    - oauth2client
+    - dash
+    - dash_bootstrap_components
+    - dash_leaflet

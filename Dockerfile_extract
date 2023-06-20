@@ -1,0 +1,38 @@
+FROM continuumio/miniconda3
+
+WORKDIR /app
+COPY . .
+
+RUN conda env create -f environment.yml
+WORKDIR /app
+RUN echo "source activate veolia-env" > ~/.bashrc
+ENV PATH /opt/conda/envs/veolia-env/bin:$PATH
+
+RUN apt-get update && apt-get install -y \
+    curl \
+    gnupg \
+    unzip \
+    xvfb \
+    libxi6 \
+    libgconf-2-4 \
+    fonts-liberation
+
+RUN curl -sS -o - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
+    && echo "deb http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list \
+    && apt-get -y update \
+    && apt-get -y install google-chrome-stable
+
+RUN wget -N https://chromedriver.storage.googleapis.com/$(curl -sS chromedriver.storage.googleapis.com/LATEST_RELEASE)/chromedriver_linux64.zip \
+    && unzip chromedriver_linux64.zip \
+    && mv chromedriver /usr/bin/chromedriver \
+    && chown root:root /usr/bin/chromedriver \
+    && chmod +x /usr/bin/chromedriver
+
+# Démarrer le serveur Xvfb
+RUN Xvfb :99 -screen 0 1024x768x16 &
+
+# Définir la variable d'environnement DISPLAY
+ENV DISPLAY=:99
+
+RUN xvfb-run python3 extract_data.py
+CMD ["xvfb-run", "python3", "extract_data.py"]

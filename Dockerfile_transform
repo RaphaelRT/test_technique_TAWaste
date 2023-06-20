@@ -1,0 +1,18 @@
+FROM continuumio/miniconda3
+
+WORKDIR /app
+
+COPY . .
+
+RUN conda env create -f environment.yml
+
+RUN echo "source activate veolia-env" > ~/.bashrc
+ENV PATH /opt/conda/envs/veolia-env/bin:$PATH
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+    unzip \
+    xvfb \
+    libxi6 \
+    libgconf-2-4
+CMD ["python3", "data_process.py"]
